@@ -1,7 +1,8 @@
 import path from "node:path"
 import { mkdir } from "node:fs/promises"
+import { homedir } from "node:os"
 
-const root = path.resolve(import.meta.dir, "../../../../..")
+const opencode = path.join(homedir(), "projects", "opencode-latest")
 const themes = path.resolve(Bun.argv[2] ?? path.join(import.meta.dir, "themes"))
 const screenshots = path.resolve(Bun.argv[3] ?? path.join(import.meta.dir, "screenshots"))
 const scenario = path.join(import.meta.dir, "scenario.ts")
@@ -47,9 +48,9 @@ for (const file of files.sort()) {
     const name = `theme-gallery-${slug}-${mode}-${process.pid}`
     console.log(`\n[${slug}/${mode}] capturing screenshots`)
     const child = Bun.spawn(
-      ["opencode-drive", "start", "--name", name, "--script", scenario, "--dev", root],
+      ["opencode-drive", "start", "--name", name, "--script", scenario, "--dev", opencode],
       {
-        cwd: root,
+        cwd: opencode,
         env: {
           ...process.env,
           OPENCODE_THEME_GALLERY_FILE: file,

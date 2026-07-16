@@ -2,7 +2,7 @@
 
 This gallery runs one repeatable OpenCode Drive workflow for every V1 theme in a directory. Each theme runs in
 light and dark mode and produces a flat set of screenshots covering the home screen, markdown, permission prompt,
-form prompt, and session switcher.
+form prompt, active subagents and shells, and session switcher.
 
 It expects `opencode-drive` to be installed globally and available on `PATH`.
 
@@ -12,16 +12,17 @@ remain documented in that source repository.
 
 ## Run
 
-Place theme JSON files in `themes/`, then run from the repository root:
+Place theme JSON files in `themes/`, then run from the repository root. The runner launches OpenCode Drive with
+`--dev ~/projects/opencode-latest`:
 
 ```sh
-bun packages/tui/test/theme/gallery/run.ts
+bun run.ts
 ```
 
 Custom input and output directories can be passed as positional arguments:
 
 ```sh
-bun packages/tui/test/theme/gallery/run.ts ./my-themes ./theme-screenshots
+bun run.ts ./my-themes ./theme-screenshots
 ```
 
 Output files are named `<theme>-<mode>-<state>.png` in one flat directory. Existing files with the same names are
@@ -33,5 +34,5 @@ unsupported and make the runner exit nonzero; they are not converted or silently
 Before changing the scenario, typecheck it with:
 
 ```sh
-opencode-drive check packages/tui/test/theme/gallery/scenario.ts
+opencode-drive check scenario.ts
 ```
