@@ -25,8 +25,15 @@ Custom input and output directories can be passed as positional arguments:
 bun run.ts ./my-themes ./theme-screenshots
 ```
 
-Output files are named `<theme>-<mode>-<state>.png` in one flat directory. Existing files with the same names are
-overwritten. Runs are sequential so each isolated OpenCode Drive instance owns its own ports and artifacts.
+Output files are named `<theme>-<mode>-<state>.png` in one flat directory. Runs are sequential so each isolated
+OpenCode Drive instance owns its own ports and artifacts. Screenshots are first written to a temporary directory and
+compared with the existing files. Images that are at least 99% similar keep the existing file unchanged, avoiding
+noisy image diffs from minor rendering variation. Set `OPENCODE_THEME_GALLERY_SIMILARITY` to a value between `0` and
+`1` to adjust the cutoff:
+
+```sh
+OPENCODE_THEME_GALLERY_SIMILARITY=0.95 bun run.ts
+```
 
 The current TUI discovers V1 theme files and migrates them to V2 at runtime. Native V2 JSON files are reported as
 unsupported and make the runner exit nonzero; they are not converted or silently rendered with a fallback theme.
