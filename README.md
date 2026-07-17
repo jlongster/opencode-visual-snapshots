@@ -2,9 +2,10 @@
 
 This gallery runs one repeatable OpenCode Drive workflow for every V1 theme in a directory. Each theme runs in
 light and dark mode and produces a flat set of screenshots covering the home screen, markdown, permission prompt,
-form prompt, active subagents and shells, and session switcher.
+form prompt, diff viewer interactions, a focused diff file tree, active subagents and shells, and session switcher.
 
-It expects `opencode-drive` to be installed globally and available on `PATH`.
+Install dependencies with `bun install`. The gallery pins `opencode-drive` and its Effect runtime so the scenario and
+CLI use the same API version.
 
 The checked-in fixtures include selected built-in OpenCode themes and community themes from
 [`vaprdev/opencode-themes`](https://github.com/vaprdev/opencode-themes). Theme-specific attribution and licenses
