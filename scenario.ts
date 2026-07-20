@@ -1,13 +1,14 @@
 import path from "node:path"
 import { mkdir } from "node:fs/promises"
 import { Effect, Stream } from "effect"
-import { defineScript, Llm, wait, type ScriptUi } from "opencode-drive"
+import { defineScript, Llm, type Ui } from "opencode-drive"
 
 const file = required("OPENCODE_THEME_GALLERY_FILE")
 const mode = required("OPENCODE_THEME_GALLERY_MODE")
 const output = required("OPENCODE_THEME_GALLERY_OUTPUT")
 const slug = required("OPENCODE_THEME_GALLERY_SLUG")
 const themeName = `gallery-${slug}`
+const streamOptions = { delay: 0, chunkSize: 1_000_000 } as const
 
 export default defineScript({
   project: { git: true },
@@ -43,7 +44,7 @@ export default defineScript({
 
       yield* ui.waitFor((state) => state.focused.editor, { timeout: 60_000 })
       yield* ui.waitFor("local")
-      yield* wait(750)
+      yield* Effect.sleep(750)
       yield* capture(ui, "01-home")
 
       yield* ui.submit("Show me a compact markdown theme specimen")
@@ -69,24 +70,24 @@ export default defineScript({
       yield* ui.waitFor("working tree", { timeout: 15_000 })
       yield* ui.press("s")
       yield* ui.press("n")
-      yield* wait(200)
+      yield* Effect.sleep(200)
       yield* capture(ui, "05-diff-viewer-interactions")
       const state = yield* ui.state()
       const fileTree = state.elements.find((element) => element.focusable && element.x === 0 && element.width === 32)
       if (!fileTree) throw new Error("Could not find the diff file tree")
       yield* ui.click(fileTree, { x: 10, y: 5 })
-      yield* wait(200)
+      yield* Effect.sleep(200)
       yield* capture(ui, "06-diff-viewer-file-tree")
       yield* ui.press("q")
       yield* ui.waitFor((state) => state.focused.editor)
 
       yield* ui.submit("Launch three background reviewers for this theme")
-      yield* wait(5_000)
+      yield* Effect.sleep(5_000)
 
       yield* ui.submit("/new")
       yield* ui.waitFor((state) => state.focused.editor, { timeout: 15_000 })
       yield* ui.submit("Create a second session for the session switcher gallery")
-      yield* wait(3_000)
+      yield* Effect.sleep(3_000)
       yield* ui.submit("/sessions")
       yield* ui.waitFor("Sessions", { timeout: 15_000 })
       yield* capture(ui, "05-session-switcher")
@@ -96,16 +97,16 @@ export default defineScript({
 
       yield* ui.type("!sleep 30")
       yield* ui.enter()
-      yield* wait(300)
+      yield* Effect.sleep(300)
       yield* ui.arrow("down")
       yield* ui.waitFor("Subagents")
       yield* capture(ui, "06-subagents-shells")
     }),
 })
 
-function capture(ui: ScriptUi, state: string) {
+function capture(ui: Ui, state: string) {
   return Effect.gen(function* () {
-    const source = yield* ui.screenshot()
+    const source = yield* ui.screenshot(`${slug}-${mode}-${state}`)
     yield* Effect.promise(() => Bun.write(path.join(output, `${slug}-${mode}-${state}.png`), Bun.file(source)))
   })
 }
@@ -113,7 +114,7 @@ function capture(ui: ScriptUi, state: string) {
 function galleryResponse(index: number) {
   if (index === 0) {
     return Stream.make(
-      Llm.reasoning("I will provide a stable markdown sample for the theme gallery."),
+      Llm.reasoning("I will provide a stable markdown sample for the theme gallery.", streamOptions),
       Llm.text(
         [
           "# Theme Review",
@@ -130,110 +131,129 @@ function galleryResponse(index: number) {
           "const mode = 'gallery'",
           "```",
         ].join("\n"),
+        streamOptions,
       ),
     )
   }
   if (index === 1) {
     return Stream.make(
-      Llm.toolCall({
-        id: "theme-gallery-permission",
-        index: 0,
-        name: "shell",
-        input: { command: "printf 'theme gallery permission'" },
-      }),
+      Llm.toolCall(
+        {
+          id: "theme-gallery-permission",
+          index: 0,
+          name: "shell",
+          input: { command: "printf 'theme gallery permission'" },
+        },
+        streamOptions,
+      ),
     )
   }
-  if (index === 2) return Stream.make(Llm.text("The protected command completed successfully."))
+  if (index === 2) return Stream.make(Llm.text("The protected command completed successfully.", streamOptions))
   if (index === 3) {
     return Stream.make(
-      Llm.toolCall({
-        id: "theme-gallery-question",
-        index: 0,
-        name: "question",
-        input: {
-          questions: [
-            {
-              header: "Theme direction",
-              question: "Which direction should this theme emphasize?",
-              options: [
-                { label: "Balanced", description: "Keep surfaces and accents evenly weighted" },
-                { label: "Expressive", description: "Give accent colors more visual presence" },
-                { label: "Quiet", description: "Favor neutral surfaces and restrained contrast" },
-              ],
-            },
-          ],
+      Llm.toolCall(
+        {
+          id: "theme-gallery-question",
+          index: 0,
+          name: "question",
+          input: {
+            questions: [
+              {
+                header: "Theme direction",
+                question: "Which direction should this theme emphasize?",
+                options: [
+                  { label: "Balanced", description: "Keep surfaces and accents evenly weighted" },
+                  { label: "Expressive", description: "Give accent colors more visual presence" },
+                  { label: "Quiet", description: "Favor neutral surfaces and restrained contrast" },
+                ],
+              },
+            ],
+          },
         },
-      }),
+        streamOptions,
+      ),
     )
   }
-  if (index === 4) return Stream.make(Llm.text("The theme review form was submitted."))
+  if (index === 4) return Stream.make(Llm.text("The theme review form was submitted.", streamOptions))
   if (index === 5) {
     return Stream.make(
-      Llm.toolCall({
-        id: "theme-gallery-diff",
-        index: 0,
-        name: "patch",
-        input: {
-          patchText: [
-            "*** Begin Patch",
-            "*** Update File: README.md",
-            "@@",
-            "-A stable project for OpenCode TUI screenshots.",
-            "+A stable project for reviewing OpenCode TUI themes.",
-            "+",
-            "+The fixture covers hierarchy, contrast, and interactive states.",
-            "*** Update File: src/example.ts",
-            "@@",
-            "-export const palette = ['neutral', 'accent', 'interactive']",
-            "+export const palette = ['neutral', 'accent', 'interactive', 'feedback']",
-            "*** Add File: src/review.ts",
-            "+export const reviewStates = ['ready', 'active', 'complete']",
-            "*** End Patch",
-          ].join("\n"),
+      Llm.toolCall(
+        {
+          id: "theme-gallery-diff",
+          index: 0,
+          name: "patch",
+          input: {
+            patchText: [
+              "*** Begin Patch",
+              "*** Update File: README.md",
+              "@@",
+              "-A stable project for OpenCode TUI screenshots.",
+              "+A stable project for reviewing OpenCode TUI themes.",
+              "+",
+              "+The fixture covers hierarchy, contrast, and interactive states.",
+              "*** Update File: src/example.ts",
+              "@@",
+              "-export const palette = ['neutral', 'accent', 'interactive']",
+              "+export const palette = ['neutral', 'accent', 'interactive', 'feedback']",
+              "*** Add File: src/review.ts",
+              "+export const reviewStates = ['ready', 'active', 'complete']",
+              "*** End Patch",
+            ].join("\n"),
+          },
         },
-      }),
+        streamOptions,
+      ),
     )
   }
-  if (index === 6) return Stream.make(Llm.text("The fixture updates are ready for review."))
+  if (index === 6) return Stream.make(Llm.text("The fixture updates are ready for review.", streamOptions))
   if (index === 7) {
     return Stream.make(
-      Llm.toolCall({
-        id: "theme-gallery-visual-auditor",
-        index: 0,
-        name: "subagent",
-        input: {
-          agent: "visual-auditor",
-          description: "Inspect visual hierarchy",
-          prompt: "Review the fixture's visual hierarchy.",
-          background: true,
+      Llm.toolCall(
+        {
+          id: "theme-gallery-visual-auditor",
+          index: 0,
+          name: "subagent",
+          input: {
+            agent: "visual-auditor",
+            description: "Inspect visual hierarchy",
+            prompt: "Review the fixture's visual hierarchy.",
+            background: true,
+          },
         },
-      }),
-      Llm.toolCall({
-        id: "theme-gallery-interaction-reviewer",
-        index: 1,
-        name: "subagent",
-        input: {
-          agent: "interaction-reviewer",
-          description: "Inspect interactive states",
-          prompt: "Review the fixture's interactive states.",
-          background: true,
+        streamOptions,
+      ),
+      Llm.toolCall(
+        {
+          id: "theme-gallery-interaction-reviewer",
+          index: 1,
+          name: "subagent",
+          input: {
+            agent: "interaction-reviewer",
+            description: "Inspect interactive states",
+            prompt: "Review the fixture's interactive states.",
+            background: true,
+          },
         },
-      }),
-      Llm.toolCall({
-        id: "theme-gallery-contrast-reviewer",
-        index: 2,
-        name: "subagent",
-        input: {
-          agent: "contrast-reviewer",
-          description: "Inspect color contrast",
-          prompt: "Review the fixture's color contrast.",
-          background: true,
+        streamOptions,
+      ),
+      Llm.toolCall(
+        {
+          id: "theme-gallery-contrast-reviewer",
+          index: 2,
+          name: "subagent",
+          input: {
+            agent: "contrast-reviewer",
+            description: "Inspect color contrast",
+            prompt: "Review the fixture's color contrast.",
+            background: true,
+          },
         },
-      }),
+        streamOptions,
+      ),
       Llm.finish("tool-calls"),
     )
   }
-  return Stream.make(Llm.text("Background worker response."))
+  return Stream.make(Llm.text("Background worker response.", streamOptions))
 }
 
 function required(name: string) {

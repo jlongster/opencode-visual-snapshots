@@ -45,7 +45,7 @@ for (const file of files.sort()) {
   }
 
   for (const mode of ["light", "dark"] as const) {
-    const name = `theme-gallery-${slug}-${mode}-${process.pid}`
+    const name = `theme-gallery-${slug}-${mode}`
     console.log(`\n[${slug}/${mode}] capturing screenshots`)
     const child = Bun.spawn(
       ["opencode-drive", "start", "--name", name, "--script", scenario, "--dev", opencode],
