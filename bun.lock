@@ -5,7 +5,7 @@
     "": {
       "devDependencies": {
         "effect": "4.0.0-beta.98",
-        "opencode-drive": "0.5.0",
+        "opencode-drive": "1.4.0",
       },
     },
   },
@@ -13,8 +13,6 @@
     "@effect/platform-node": ["@effect/platform-node@4.0.0-beta.98", "", { "dependencies": { "@effect/platform-node-shared": "^4.0.0-beta.98", "mime": "^4.1.0", "undici": "^8.7.0" }, "peerDependencies": { "effect": "^4.0.0-beta.98", "ioredis": "^5.7.0" } }, "sha512-IQu1TiLXQEDSGkDBllyYjVadf+UqdjptryqX4mmktVTTbGDq7X4uVxe7cSgXuqZvyfG6kagTzwj2lfynxOaKQg=="],
 
     "@effect/platform-node-shared": ["@effect/platform-node-shared@4.0.0-beta.98", "", { "dependencies": { "@types/ws": "^8.18.1", "ws": "^8.21.0" }, "peerDependencies": { "effect": "^4.0.0-beta.98" } }, "sha512-iySXaffnCJX1sNAIp79ghhIeui9E5qwUQyqd1VLPkB9UNO4vdpd9B5fTEXwe7S/GusL4jsk9vSvX38XJgRFG1w=="],
-
-    "@fontsource/noto-sans-symbols-2": ["@fontsource/noto-sans-symbols-2@5.2.8", "", {}, "sha512-OGKq1CaSIszlSBc4Ie2XPBS8yFfF1fMfzjjoRRfpijjgjk1Xg/WSo/3Bg0cJdoxxIdQ0a2XENzJHhfpWLNv5Lw=="],
 
     "@ioredis/commands": ["@ioredis/commands@1.10.0", "", {}, "sha512-UmeW7z4LfctwoQ5wkhVzgq8tXkreED2xZGpX+Bg+zA+WJFZCT6c062AfCK/Dfk81xZnnwdhJCUMkitihRaoC2Q=="],
 
@@ -53,6 +51,12 @@
     "@napi-rs/canvas-win32-arm64-msvc": ["@napi-rs/canvas-win32-arm64-msvc@1.0.2", "", { "os": "win32", "cpu": "arm64" }, "sha512-yE0koHCFF4PIbMc2o2SEALhnipz7WBISh5glLvQiomtIoCcW0np3H4Lw93ceJAfJttTTeIIWFbwH84F7EVzjMQ=="],
 
     "@napi-rs/canvas-win32-x64-msvc": ["@napi-rs/canvas-win32-x64-msvc@1.0.2", "", { "os": "win32", "cpu": "x64" }, "sha512-okU8/t2foV6C31n0GtvEMbfD5rOFc70+/6xUNME9Guld29sgSOIGUEDScAWFlcP3k5TYQRl9TNkwJEEjh15w8A=="],
+
+    "@opencode-ai/client": ["@opencode-ai/client@0.0.0-next-15747", "", { "dependencies": { "@opencode-ai/protocol": "0.0.0-next-15747", "@opencode-ai/schema": "0.0.0-next-15747" }, "peerDependencies": { "effect": "4.0.0-beta.98" }, "optionalPeers": ["effect"] }, "sha512-18j1BXJA34wq52PoP0ddalOWE2Ij9cpemT0wYokqAICcztdj4ojWLeTrFeQldTEzTOj0z1hEZjMB6l8S7UCUFQ=="],
+
+    "@opencode-ai/protocol": ["@opencode-ai/protocol@0.0.0-next-15747", "", { "dependencies": { "@opencode-ai/schema": "0.0.0-next-15747", "effect": "4.0.0-beta.98" } }, "sha512-VX51qDVA7FoaeAKNSM2hguaLg7W6vSXqh8Q7hM96vKxMbzl3P2+ESuwD11GQn93YuvkBlyPzvyEPeYgI/vhTVA=="],
+
+    "@opencode-ai/schema": ["@opencode-ai/schema@0.0.0-next-15747", "", { "dependencies": { "effect": "4.0.0-beta.98" } }, "sha512-BrXOa6Ym5ivzJ7rc4ztw8GlLVqJkZ6G4cZXaJRAQhsOetoASSL2zspCX/T2GjI0txx40EWCGtH+r9lMgMWbwew=="],
 
     "@standard-schema/spec": ["@standard-schema/spec@1.1.0", "", {}, "sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w=="],
 
@@ -96,7 +100,7 @@
 
     "node-gyp-build-optional-packages": ["node-gyp-build-optional-packages@5.2.2", "", { "dependencies": { "detect-libc": "^2.0.1" }, "bin": { "node-gyp-build-optional-packages": "bin.js", "node-gyp-build-optional-packages-optional": "optional.js", "node-gyp-build-optional-packages-test": "build-test.js" } }, "sha512-s+w+rBWnpTMwSFbaE0UXsRlg7hU4FjekKU4eyAih5T8nJuNZT1nNsskXpxmeqSK9UzkBl6UgRlnKc8hz8IEqOw=="],
 
-    "opencode-drive": ["opencode-drive@0.5.0", "", { "dependencies": { "@effect/platform-node": "4.0.0-beta.98", "@effect/platform-node-shared": "4.0.0-beta.98", "@fontsource/noto-sans-symbols-2": "5.2.8", "@napi-rs/canvas": "1.0.2", "@wterm/core": "0.3.0", "@wterm/ghostty": "0.3.0", "effect": "4.0.0-beta.98" }, "bin": { "opencode-drive": "bin/opencode-drive" } }, "sha512-sStWbYUPTEE9+rG4C5t7mJUdL+it+B32p9Q6JUwAWSkgmEfL3f0SeejLTJaQbwzghvAYtUK6JJtvCsqdObx4pw=="],
+    "opencode-drive": ["opencode-drive@1.4.0", "", { "dependencies": { "@effect/platform-node": "4.0.0-beta.98", "@effect/platform-node-shared": "4.0.0-beta.98", "@napi-rs/canvas": "1.0.2", "@opencode-ai/client": "0.0.0-next-15747", "@wterm/core": "0.3.0", "@wterm/ghostty": "0.3.0", "effect": "4.0.0-beta.98" }, "bin": { "opencode-drive": "bin/opencode-drive" } }, "sha512-Slx6eYuzNpz+1w7yu3UWY8XV5M/Yig3efpI9/RqWF77odobZo1aAkz4gezSdKfskTvPLsSUDOD1lwYJXKX3iNQ=="],
 
     "pure-rand": ["pure-rand@8.4.2", "", {}, "sha512-vvuOGgcuPJAirlHvuQw1TrOiw7ptaIXXmIbNuiNOY6lNGJJH49PQ1Kj4nd783nPdQhQdicgOjVI2yI/9BD6/Ng=="],
 
